@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/M-Nayeem/shorten-url#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "bson": "^4.0.2",
+    "express": "^4.17.1",
+    "mongodb": "^3.2.7"
   }
 }

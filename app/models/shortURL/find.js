@@ -1,12 +1,17 @@
-/* Placeholder. */
+import COLLECTIONS from '../../database/collections.js';
+import databaseConnect from '../../database/connect.js';
+
+/* Find short URL entries and resolve with list of (ID, shortURL) tuples. */
 export default async (query, {
   sort = null,
   limit = null
 } = {}) => {
-  const database = [[0, {path: 'abc', destination: 'http://example.com'}]];
-  let results = database;
-  for (const key in query) {
-    results = results.filter(([id, shortURL]) => shortURL[key] == query[key]);
-  }
-  return results;
+  return databaseConnect().then(database => {
+    return database.find(COLLECTIONS.SHORT_URLS, query, {
+      sort,
+      limit
+    }).catch(error => {
+      return Promise.reject(`Couldn't get the short URL data: ${error}`);
+    });
+  });
 };
