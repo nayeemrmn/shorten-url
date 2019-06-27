@@ -1,6 +1,8 @@
 import express from 'express';
 import process from 'process';
 
+import routes from './routes/router.js';
+
 /* Read the port number from the environment variable 'PORT' or set it to 80. */
 const port = process.env.PORT == undefined ? 80 : Number(process.env.PORT);
 if (!Number.isFinite(port)) {
@@ -16,6 +18,7 @@ app.use((request, response, next) => {
       + `[${response.statusCode}]: ${request.originalUrl}`));
   next();
 });
+app.use(routes);
 
 /* Start the server. */
 app.listen(port, () => {
