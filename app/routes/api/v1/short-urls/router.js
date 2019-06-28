@@ -1,11 +1,30 @@
 import express from 'express';
 
 import createShortURL from '../../../../models/shortURL/create.js';
+import findShortURL from '../../../../models/shortURL/find.js';
 import parseRequestBody from '../../../../utils/parse-request-body.js';
 import respond from '../../../../utils/respond.js';
 import shortURL from './short-url/router.js';
 
 const router = express.Router();
+
+router.get('/', (request, response, next) => {
+  findShortURL({}, {
+    sort: request.query.sort != null
+      ? Object.fromEntries(Object.entries(request.query.sort)
+        .map(([key, value]) => [key, Number(value)]))
+      : null,
+    limit: request.query.limit != null
+      ? Number(request.query.limit)
+      : null
+  }).then(shortURLEntries => {
+    respond(response, {json: {
+      shortURLEntries: shortURLEntries.map(([id, data]) => ({id, data}))
+    }});
+  }).catch(error => {
+    respond(response, {status: 500, error});
+  });
+});
 
 router.post('/', (request, response, next) => {
   parseRequestBody(request).then(({url}) => {
