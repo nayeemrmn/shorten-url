@@ -74,6 +74,8 @@ const mongoFind = async (database, collectionName, {...query}, {
   let cursor = database.collection(collectionName).find(query);
   if (sort != null) {
     cursor = cursor.sort(sort);
+  } else {
+    cursor = cursor.sort({_id: 1});
   }
   if (limit != null) {
     cursor = cursor.limit(limit);
