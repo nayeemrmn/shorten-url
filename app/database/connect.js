@@ -78,6 +78,9 @@ const mongoFind = async (database, collectionName, {...query}, {
     cursor = cursor.sort({_id: 1});
   }
   if (limit != null) {
+    if (limit == 0) {
+      return [];
+    }
     cursor = cursor.limit(limit);
   }
   return cursor.toArray()
@@ -105,7 +108,6 @@ const mongoPullGlobals = async database => {
     .catch(error => {
       return Promise.reject(`Failed to open the global document: ${error}`);
     }).then(document => {
-      console.log(document);
       if (document == null) {
         return {};
       } else {
