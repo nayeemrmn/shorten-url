@@ -17,6 +17,7 @@ export default async () => new Promise((resolve, reject) => {
           pull: mongoPull.bind(null, database),
           delete: mongoDelete.bind(null, database),
           find: mongoFind.bind(null, database),
+          deleteAll: mongoDeleteAll.bind(null, database),
           pushGlobals: mongoPushGlobals.bind(null, database),
           pullGlobals: mongoPullGlobals.bind(null, database)
         });
@@ -105,6 +106,13 @@ const mongoFind = async (database, collectionName, {...query}, {
       delete result._id;
       return [id, result];
     }));
+};
+
+const mongoDeleteAll = async (database, collectionName) => {
+  return database.collection(collectionName).deleteMany({}).catch(error => {
+    return Promise.reject(`Failed to delete all documents in the collection `
+      + `'${collectionName}': ${error}`);
+  });
 };
 
 const mongoPushGlobals = async (database, document) => {

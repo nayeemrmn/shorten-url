@@ -3,6 +3,7 @@ import express from 'express';
 import createShortURL from '../../../../models/shortURL/create.js';
 import findShortURL from '../../../../models/shortURL/find.js';
 import parseRequestBody from '../../../../utils/parse-request-body.js';
+import removeAllShortURLs from '../../../../models/shortURL/removeAll.js';
 import respond from '../../../../utils/respond.js';
 import shortURL from './short-url/router.js';
 
@@ -39,6 +40,14 @@ router.post('/', (request, response, next) => {
     });
   }).catch(error => {
     respond(response, {status: 400, error});
+  });
+});
+
+router.delete('/', (request, response, next) => {
+  removeAllShortURLs().then(() => {
+    respond(response);
+  }).catch(error => {
+    respond(response, {status: 500, error});
   });
 });
 
