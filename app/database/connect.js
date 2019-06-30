@@ -15,6 +15,7 @@ export default async () => new Promise((resolve, reject) => {
         resolve({
           push: mongoPush.bind(null, database),
           pull: mongoPull.bind(null, database),
+          delete: mongoDelete.bind(null, database),
           find: mongoFind.bind(null, database),
           pushGlobals: mongoPushGlobals.bind(null, database),
           pullGlobals: mongoPullGlobals.bind(null, database)
@@ -52,16 +53,28 @@ const mongoPull = async (database, collectionName, id) => {
   return database.collection(collectionName)
     .findOne({_id: new bson.ObjectID(id)}).catch(error => {
       return Promise.reject(`Failed to open the collection '${collectionName}' `
-        + `to pull document with ID '${id}': ${error}`);
+        + `to pull the document with ID '${id}': ${error}`);
     }).then(document => {
       if (document == null) {
-        return Promise.reject(
-          `Couldn't find the document in collection '${collectionName}' with `
-            + `ID '${id}'.`);
+        return Promise.reject(`Couldn't find the document in collection `
+          + `'${collectionName}' with ID '${id}'.`);
       } else {
         const result = {...document};
         delete result._id;
         return result;
+      }
+    });
+};
+
+const mongoDelete = async (database, collectionName, id) => {
+  return database.collection(collectionName)
+    .deleteOne({_id: new bson.ObjectID(id)}).catch(error => {
+      return Promise.reject(`Failed to open the collection '${collectionName}' `
+        + `to delete the document with ID '${id}': ${error}`);
+    }).then(({deletedCount}) => {
+      if (deletedCount == 0) {
+        return Promise.reject(`Couldn't find the document in collection `
+          + `'${collectionName}' with ID '${id}'.`);
       }
     });
 };
