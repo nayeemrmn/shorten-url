@@ -4,40 +4,33 @@ import process from 'process';
 
 import COLLECTIONS from './collections.js';
 
-export default async () => new Promise((resolve, reject) => {
-  mongodb.MongoClient.connect(process.env.MONGODB_URI,
-    {useNewUrlParser: true}, (error, client) => {
-      if (error) {
-        reject(`Couldn't connect to the database: ${error}`);
-      } else {
-        const database = client.db(process.env.MONGODB_URI.slice(
-          process.env.MONGODB_URI.lastIndexOf('/') + 1))
-        resolve({
-          push: mongoPush.bind(null, database),
-          pull: mongoPull.bind(null, database),
-          delete: mongoDelete.bind(null, database),
-          find: mongoFind.bind(null, database),
-          deleteAll: mongoDeleteAll.bind(null, database),
-          pushGlobals: mongoPushGlobals.bind(null, database),
-          pullGlobals: mongoPullGlobals.bind(null, database)
-        });
-      }
-    });
-});
+export default async () => {
+  return mongodb.MongoClient.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true
+  }).catch(error => {
+    return Promise.reject(`Couldn't connect to the database: ${error}`);
+  }).then(client => {
+    const database = client.db(process.env.MONGODB_URI.slice(
+      process.env.MONGODB_URI.lastIndexOf('/') + 1))
+    return {
+      push: mongoPush.bind(null, database),
+      pull: mongoPull.bind(null, database),
+      delete: mongoDelete.bind(null, database),
+      find: mongoFind.bind(null, database),
+      deleteAll: mongoDeleteAll.bind(null, database),
+      pushGlobals: mongoPushGlobals.bind(null, database),
+      pullGlobals: mongoPullGlobals.bind(null, database)
+    };
+  });
+};
 
 const mongoPush = async (database, collectionName, document, id = null) => {
   const collection = database.collection(collectionName);
   if (id == null) {
-    return new Promise((resolve, reject) =>
-      collection.insertOne(document, (error) => {
-        if (error) {
-          reject(`Failed to insert the document into collection `
-            + `'${collectionName}': ${error}`);
-        } else {
-          resolve(`${document._id}`);
-        }
-      })
-    );
+    return collection.insertOne(document).catch(error => {
+      return Promise.reject(`Failed to insert the document into collection `
+      + `'${collectionName}': ${error}`);
+    }).then(({insertedId}) => `${insertedId}`);
   } else {
     try {
       const objectID = new bson.ObjectID(id);
