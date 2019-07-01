@@ -9,10 +9,10 @@ export default async () => {
       return database.pushGlobals(globals);
     }).catch(error => {
       return Promise.reject(`Couldn't reset the index: ${error}`);
-    }).then(() => {
-      return database.deleteAll(COLLECTIONS.SHORT_URLS).catch(error => {
-        return Promise.reject(`Couldn't remove all short URL data: ${error}`);
-      });
+    }).then(() => database);
+  }).then(database => {
+    return database.deleteAll(COLLECTIONS.SHORT_URLS).catch(error => {
+      return Promise.reject(`Couldn't remove all short URL data: ${error}`);
     });
   });
 };
