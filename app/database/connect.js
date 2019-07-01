@@ -5,6 +5,10 @@ import process from 'process';
 import COLLECTIONS from './collections.js';
 
 export default async () => {
+  if (process.env.MONGODB_URI == null) {
+    return Promise.reject(`Couldn't connect to the database: MONGODB_URI is `
+    + 'not set.');
+  }
   return mongodb.MongoClient.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true
   }).catch(error => {
