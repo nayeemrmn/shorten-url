@@ -14,8 +14,7 @@ export default async () => {
   }).catch(error => {
     return Promise.reject(`Couldn't connect to the database: ${error}`);
   }).then(client => {
-    const database = client.db(process.env.MONGODB_URI.slice(
-      process.env.MONGODB_URI.lastIndexOf('/') + 1))
+    const database = client.db();
     return {
       push: mongoPush.bind(null, database),
       pull: mongoPull.bind(null, database),
