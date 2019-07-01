@@ -1,7 +1,8 @@
 import process from 'process';
 
 export default request => {
-  if (!request.headers.authorization
+  if (process.env.ADMIN_USERNAME == null || process.env.ADMIN_PASSWORD == null
+      || !request.headers.authorization
       || !request.headers.authorization.startsWith('Basic ')) {
     return false;
   }
