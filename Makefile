@@ -1,5 +1,8 @@
-MONGODB_URI = mongodb://127.0.0.1:27017/shorten-url
-PORT = 8000
+ENVIRONMENT = \
+	ADMIN_USERNAME=admin \
+	ADMIN_PASSWORD=password \
+	MONGODB_URI=mongodb://127.0.0.1:27017/shorten-url \
+	PORT=8000
 
 .PHONY: all clean server
 
@@ -21,7 +24,8 @@ clean:
 # Environment requirements:
 #   - An installation of node whose version complies with package.json.
 #   - A MongoDB database being served at $(MONGODB_URI).
+# Protected endpoints may be accessed using credentials containing
+# $(ADMIN_USERNAME):$(ADMIN_PASSWORD).
 server: node_modules/
 	@echo "Start the server."
-	@MONGODB_URI=$(MONGODB_URI) PORT=$(PORT) \
-		node --experimental-modules app/server.js
+	@$(ENVIRONMENT) node --experimental-modules app/server.js

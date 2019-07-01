@@ -1,5 +1,6 @@
 import express from 'express';
 
+import authenticateAdmin from '../../../../../utils/authenticateAdmin.js';
 import getShortURL from '../../../../../models/shortURL/get.js';
 import removeShortURL from '../../../../../models/shortURL/remove.js';
 import respond from '../../../../../utils/respond.js';
@@ -15,6 +16,9 @@ router.get('/', (request, response, next) => {
 });
 
 router.delete('/', (request, response, next) => {
+  if (!authenticateAdmin(request)) {
+    return respond(response, {denyAuthorization: true});
+  }
   removeShortURL(request.params.urlID).then(() => {
     respond(response);
   }).catch(error => {

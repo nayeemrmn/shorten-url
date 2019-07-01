@@ -1,5 +1,6 @@
 export default (response, {
   error = null,
+  denyAuthorization = false,
   redirect = null,
   status = 200,
   json = null
@@ -8,7 +9,11 @@ export default (response, {
     console.error(
       `${response.req.method} ${response.req.originalUrl}: ${error}`);
   }
-  if (redirect) {
+  if (denyAuthorization) {
+    response.set('WWW-Authenticate', 'Basic realm="Access to protected '
+    + 'resources or services."');
+    response.status(401).end();
+  } else if (redirect) {
     response.redirect(status, redirect);
   } else {
     response.status(status);
