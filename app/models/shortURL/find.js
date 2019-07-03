@@ -6,12 +6,9 @@ export default async (query, {
   sort = null,
   limit = null
 } = {}) => {
-  return databaseConnect().then(database => {
-    return database.find(COLLECTIONS.SHORT_URLS, query, {
-      sort,
-      limit
-    }).catch(error => {
-      return Promise.reject(`Couldn't get the short URL data: ${error}`);
-    });
-  });
+  const database = await databaseConnect();
+  return database.find(COLLECTIONS.SHORT_URLS, query, {
+    sort,
+    limit
+  }).catch(e => Promise.reject(`Couldn't get the short URL data: ${e}`));
 };

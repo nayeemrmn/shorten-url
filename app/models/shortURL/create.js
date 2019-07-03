@@ -7,21 +7,16 @@ const UNUSABLE_PATHS = Object.freeze([
 
 /* Create a short URL entry and resolve with an (ID, shortURL) tuple. */
 export default async destination => {
-  return databaseConnect().then(database => {
-    return database.pullGlobals().catch(error => {
-      return Promise.reject(`Couldn't get the next index: ${error}`);
-    }).then(globals => [database, globals]);
-  }).then(([database, globals]) => {
-    let index = globals.nextIndex || 0;
-    for (; UNUSABLE_PATHS.includes(index.toString(36)); index++);
-    globals.nextIndex = index + 1;
-    return database.pushGlobals(globals).catch(error => {
-      return Promise.reject(`Failed to commit the next index: ${error}`);
-    }).then(() => [database, index]);
-  }).then(([database, index]) => {
-    const shortURL = {destination, path: index.toString(36)};
-    return database.push(COLLECTIONS.SHORT_URLS, shortURL).catch(error => {
-      return Promise.reject(`Failed to commit the short URL data: ${error}`);
-    }).then(id => [id, shortURL]);
-  });
+  const database = await databaseConnect();
+  const globals = await database.pullGlobals()
+    .catch(e => Promise.reject(`Couldn't get the next index: ${e}`));
+  let index = globals.nextIndex || 0;
+  for (; UNUSABLE_PATHS.includes(index.toString(36)); index++);
+  globals.nextIndex = index + 1;
+  await database.pushGlobals(globals)
+    .catch(e => Promise.reject(`Failed to commit the next index: ${e}`));
+  const shortURL = {destination, path: index.toString(36)};
+  const id = await database.push(COLLECTIONS.SHORT_URLS, shortURL)
+    .catch(e => Promise.reject(`Failed to commit the short URL data: ${e}`));
+  return [id, shortURL];
 };
