@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/M-Nayeem/shorten-url.git"
+    "url": "git+https://github.com/nayeem-rahman/shorten-url.git"
   },
   "author": "Nayeem Rahman",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/M-Nayeem/shorten-url/issues"
+    "url": "https://github.com/nayeem-rahman/shorten-url/issues"
   },
-  "homepage": "https://github.com/M-Nayeem/shorten-url#readme",
+  "homepage": "https://github.com/nayeem-rahman/shorten-url#readme",
   "dependencies": {
     "bson": "^4.0.2",
     "express": "^4.17.1",
