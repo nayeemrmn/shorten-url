@@ -4,9 +4,9 @@
   "description": "A URL shortener.",
   "type": "module",
   "files": [
-    "app"
+    "src"
   ],
-  "main": "app/routes/router.js",
+  "main": "src/routes/router.js",
   "engines": {
     "node": ">=12.0.0"
   },

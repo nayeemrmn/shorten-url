@@ -1,10 +1,10 @@
 import express from 'express';
 
 import authenticateAdmin from '../../../../utils/authenticateAdmin.js';
-import createShortURL from '../../../../models/shortURL/create.js';
-import findShortURL from '../../../../models/shortURL/find.js';
+import createShortURL from '../../../../core/shortURL/create.js';
+import findShortURL from '../../../../core/shortURL/find.js';
 import parseRequestBody from '../../../../utils/parse-request-body.js';
-import removeAllShortURLs from '../../../../models/shortURL/remove-all.js';
+import removeAllShortURLs from '../../../../core/shortURL/remove-all.js';
 import respond from '../../../../utils/respond.js';
 import shortURL from './short-url/router.js';
 

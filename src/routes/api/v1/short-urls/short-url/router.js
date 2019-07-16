@@ -1,8 +1,8 @@
 import express from 'express';
 
 import authenticateAdmin from '../../../../../utils/authenticateAdmin.js';
-import getShortURL from '../../../../../models/shortURL/get.js';
-import removeShortURL from '../../../../../models/shortURL/remove.js';
+import getShortURL from '../../../../../core/shortURL/get.js';
+import removeShortURL from '../../../../../core/shortURL/remove.js';
 import respond from '../../../../../utils/respond.js';
 
 const router = express.Router({mergeParams: true});

@@ -28,4 +28,4 @@ clean:
 # $(ADMIN_USERNAME):$(ADMIN_PASSWORD).
 server: node_modules/
 	@echo "Start the server."
-	@$(ENVIRONMENT) node --experimental-modules app/server.js
+	@$(ENVIRONMENT) node --experimental-modules src/server.js

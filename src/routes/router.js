@@ -1,7 +1,7 @@
 import express from 'express';
 
 import api from './api/router.js';
-import findShortURLs from '../models/shortURL/find.js';
+import findShortURLs from '../core/shortURL/find.js';
 import respond from '../utils/respond.js';
 
 const router = express.Router();
