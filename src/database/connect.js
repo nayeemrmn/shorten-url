@@ -49,7 +49,7 @@ const mongoPull = async (database, collectionName, id) => {
     .catch(e => Promise.reject(`Failed to open the collection '${collectionName}' `
         + `to pull the document with ID '${id}': ${e}`));
   if (document == null) {
-    return Promise.reject(`Couldn't find the document in collection `
+    return Promise.reject(`Couldn't find a document in collection `
       + `'${collectionName}' with ID '${id}'.`);
   }
   const result = {...document};
@@ -63,7 +63,7 @@ const mongoDelete = async (database, collectionName, id) => {
     .catch(e => Promise.reject(`Failed to open the collection `
       + `'${collectionName}' to delete the document with ID '${id}': ${e}`));
   if (deletedCount == 0) {
-    return Promise.reject(`Couldn't find the document in collection `
+    return Promise.reject(`Couldn't find a document in collection `
       + `'${collectionName}' with ID '${id}'.`);
   }
 };
