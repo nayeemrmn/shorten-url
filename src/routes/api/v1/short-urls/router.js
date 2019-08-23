@@ -11,48 +11,68 @@ import shortURL from './short-url/router.js';
 const router = express.Router();
 
 router.get('/', (request, response, next) => {
-  findShortURL({}, {
-    sort: request.query.sort != null
-      ? Object.fromEntries(Object.entries(request.query.sort)
-        .map(([key, value]) => [key, Number(value)]))
-      : null,
-    limit: request.query.limit != null
-      ? Number(request.query.limit)
-      : null
-  }).then(shortURLEntries => {
-    respond(response, {json: {
-      shortURLEntries: shortURLEntries.map(([id, data]) => ({id, data}))
-    }});
-  }).catch(error => {
-    respond(response, {status: 500, error});
-  });
+  findShortURL(
+    {},
+    {
+      sort:
+        request.query.sort != null
+          ? Object.fromEntries(
+              Object.entries(request.query.sort).map(([key, value]) => [
+                key,
+                Number(value)
+              ])
+            )
+          : null,
+      limit: request.query.limit != null ? Number(request.query.limit) : null
+    }
+  )
+    .then(shortURLEntries => {
+      respond(response, {
+        json: {
+          shortURLEntries: shortURLEntries.map(([id, data]) => ({id, data}))
+        }
+      });
+    })
+    .catch(error => {
+      respond(response, {status: 500, error});
+    });
 });
 
 router.post('/', (request, response, next) => {
-  parseRequestBody(request).then(({url}) => {
-    createShortURL(url).then(([id, shortURL]) => {
-      respond(response, {json: {
-        id,
-        data: shortURL,
-        url: `${request.protocol}://${request.get('Host')}/${shortURL.path}`
-      }});
-    }).catch(error => {
-      respond(response, {status: 500, error});
+  parseRequestBody(request)
+    .then(({url}) => {
+      createShortURL(url)
+        .then(([id, shortURL]) => {
+          respond(response, {
+            json: {
+              id,
+              data: shortURL,
+              url: `${request.protocol}://${request.get('Host')}/${
+                shortURL.path
+              }`
+            }
+          });
+        })
+        .catch(error => {
+          respond(response, {status: 500, error});
+        });
+    })
+    .catch(error => {
+      respond(response, {status: 400, error});
     });
-  }).catch(error => {
-    respond(response, {status: 400, error});
-  });
 });
 
 router.delete('/', (request, response, next) => {
   if (!authenticateAdmin(request)) {
     return respond(response, {denyAuthorization: true});
   }
-  removeAllShortURLs().then(() => {
-    respond(response);
-  }).catch(error => {
-    respond(response, {status: 500, error});
-  });
+  removeAllShortURLs()
+    .then(() => {
+      respond(response);
+    })
+    .catch(error => {
+      respond(response, {status: 500, error});
+    });
 });
 
 router.use('/:urlID', shortURL);

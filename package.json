@@ -24,5 +24,8 @@
     "bson": "^4.0.2",
     "express": "^4.17.1",
     "mongodb": "^3.2.7"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2"
   }
 }

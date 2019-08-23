@@ -14,8 +14,11 @@ if (!Number.isFinite(port)) {
 const app = express();
 app.use((request, response, next) => {
   response.on('finish', () =>
-    console.log(`[${`${new Date}`.split(' ', 5).join(' ')}] `
-      + `[${response.statusCode}]: ${request.originalUrl}`));
+    console.log(
+      `[${`${new Date()}`.split(' ', 5).join(' ')}] ` +
+        `[${response.statusCode}]: ${request.originalUrl}`
+    )
+  );
   next();
 });
 app.use(routes);

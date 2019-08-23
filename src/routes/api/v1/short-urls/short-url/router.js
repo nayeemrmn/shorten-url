@@ -8,22 +8,26 @@ import respond from '../../../../../utils/respond.js';
 const router = express.Router({mergeParams: true});
 
 router.get('/', (request, response, next) => {
-  getShortURL(request.params.urlID).then(shortURL => {
-    respond(response, {json: shortURL});
-  }).catch(error => {
-    respond(response, {status: 404, error});
-  });
+  getShortURL(request.params.urlID)
+    .then(shortURL => {
+      respond(response, {json: shortURL});
+    })
+    .catch(error => {
+      respond(response, {status: 404, error});
+    });
 });
 
 router.delete('/', (request, response, next) => {
   if (!authenticateAdmin(request)) {
     return respond(response, {denyAuthorization: true});
   }
-  removeShortURL(request.params.urlID).then(() => {
-    respond(response);
-  }).catch(error => {
-    respond(response, {status: 404, error});
-  });
+  removeShortURL(request.params.urlID)
+    .then(() => {
+      respond(response);
+    })
+    .catch(error => {
+      respond(response, {status: 404, error});
+    });
 });
 
 export default router;
