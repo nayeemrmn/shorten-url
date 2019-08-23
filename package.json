@@ -1,6 +1,6 @@
 {
   "name": "shorten-url",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A URL shortener.",
   "type": "module",
   "files": [
