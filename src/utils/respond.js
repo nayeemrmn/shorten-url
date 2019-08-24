@@ -10,7 +10,7 @@ export default (
 ) => {
   if (error) {
     console.error(
-      `${response.req.method} ${response.req.originalUrl}: ${error}`
+      `${response.req.method} ${response.req.originalUrl}: ${error.stack}`
     );
   }
   if (denyAuthorization) {

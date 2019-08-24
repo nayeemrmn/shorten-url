@@ -7,8 +7,8 @@ import respond from '../../../../../utils/respond.js';
 
 const router = express.Router({mergeParams: true});
 
-router.get('/', (request, response, next) => {
-  getShortURL(request.params.urlID)
+router.get('/', async (request, response, next) => {
+  await getShortURL(request.params.urlID)
     .then(shortURL => {
       respond(response, {json: shortURL});
     })
@@ -17,11 +17,11 @@ router.get('/', (request, response, next) => {
     });
 });
 
-router.delete('/', (request, response, next) => {
+router.delete('/', async (request, response, next) => {
   if (!authenticateAdmin(request)) {
     return respond(response, {denyAuthorization: true});
   }
-  removeShortURL(request.params.urlID)
+  await removeShortURL(request.params.urlID)
     .then(() => {
       respond(response);
     })

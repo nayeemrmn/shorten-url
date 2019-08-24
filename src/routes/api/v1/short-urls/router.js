@@ -10,8 +10,8 @@ import shortURL from './short-url/router.js';
 
 const router = express.Router();
 
-router.get('/', (request, response, next) => {
-  findShortURL(
+router.get('/', async (request, response, next) => {
+  await findShortURL(
     {},
     {
       sort:
@@ -38,8 +38,8 @@ router.get('/', (request, response, next) => {
     });
 });
 
-router.post('/', (request, response, next) => {
-  parseRequestBody(request)
+router.post('/', async (request, response, next) => {
+  await parseRequestBody(request)
     .then(({url}) => {
       createShortURL(url)
         .then(([id, shortURL]) => {
@@ -62,11 +62,11 @@ router.post('/', (request, response, next) => {
     });
 });
 
-router.delete('/', (request, response, next) => {
+router.delete('/', async (request, response, next) => {
   if (!authenticateAdmin(request)) {
     return respond(response, {denyAuthorization: true});
   }
-  removeAllShortURLs()
+  await removeAllShortURLs()
     .then(() => {
       respond(response);
     })

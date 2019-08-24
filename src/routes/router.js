@@ -8,13 +8,13 @@ const router = express.Router();
 
 router.use('/api', api);
 
-router.use('/:path', (request, response, next) => {
-  findShortURLs({path: request.params.path})
+router.use('/:path', async (request, response, next) => {
+  await findShortURLs({path: request.params.path})
     .then(results => {
       if (results.length == 0) {
         return respond(response, {
           status: 404,
-          error: 'Path is not registered to a destination URL.'
+          error: new Error('Path is not registered to a destination URL.')
         });
       }
       const [, shortURL] = results[0];
