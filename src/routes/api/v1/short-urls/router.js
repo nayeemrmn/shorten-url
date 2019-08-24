@@ -1,18 +1,18 @@
 import express from 'express';
 
-import authenticateAdmin from '../../../../utils/authenticateAdmin.js';
-import createShortURL from '../../../../core/shortURL/create.js';
-import findShortURL from '../../../../core/shortURL/find.js';
+import authenticateAdmin from '../../../../utils/authenticate-admin.js';
+import createShortUrl from '../../../../core/short-url/create.js';
+import findShortUrl from '../../../../core/short-url/find.js';
 import inferErrorStatus from '../../../../utils/infer-error-status.js';
 import parseRequestBody from '../../../../utils/parse-request-body.js';
-import removeAllShortURLs from '../../../../core/shortURL/remove-all.js';
+import removeAllShortUrls from '../../../../core/short-url/remove-all.js';
 import respond from '../../../../utils/respond.js';
-import shortURL from './short-url/router.js';
+import shortUrl from './short-url/router.js';
 
 const router = express.Router();
 
 router.get('/', async (request, response, next) => {
-  await findShortURL(
+  await findShortUrl(
     {},
     {
       sort:
@@ -27,10 +27,10 @@ router.get('/', async (request, response, next) => {
       limit: request.query.limit != null ? Number(request.query.limit) : null
     }
   )
-    .then(shortURLEntries => {
+    .then(shortUrlEntries => {
       respond(response, {
         json: {
-          shortURLEntries: shortURLEntries.map(([id, data]) => ({id, data}))
+          shortUrlEntries: shortUrlEntries.map(([id, data]) => ({id, data}))
         }
       });
     })
@@ -42,14 +42,14 @@ router.get('/', async (request, response, next) => {
 router.post('/', async (request, response, next) => {
   await parseRequestBody(request)
     .then(async ({url}) => {
-      await createShortURL(url)
-        .then(([id, shortURL]) => {
+      await createShortUrl(url)
+        .then(([id, shortUrl]) => {
           respond(response, {
             json: {
               id,
-              data: shortURL,
+              data: shortUrl,
               url: `${request.protocol}://${request.get('Host')}/${
-                shortURL.path
+                shortUrl.path
               }`
             }
           });
@@ -67,7 +67,7 @@ router.delete('/', async (request, response, next) => {
   if (!authenticateAdmin(request)) {
     return respond(response, {denyAuthorization: true});
   }
-  await removeAllShortURLs()
+  await removeAllShortUrls()
     .then(() => {
       respond(response);
     })
@@ -76,6 +76,6 @@ router.delete('/', async (request, response, next) => {
     });
 });
 
-router.use('/:urlID', shortURL);
+router.use('/:urlId', shortUrl);
 
 export default router;

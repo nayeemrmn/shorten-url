@@ -42,8 +42,8 @@ const mongoPush = async (database, collectionName, document, id = null) => {
     return `${insertedId}`;
   }
   try {
-    const objectID = new bson.ObjectID(id);
-    await collection.replaceOne({_id: objectID}, {...document, _id: objectID});
+    const objectId = new bson.ObjectID(id);
+    await collection.replaceOne({_id: objectId}, {...document, _id: objectId});
     return id;
   } catch (e) {
     throw new CoreError(
@@ -55,15 +55,15 @@ const mongoPush = async (database, collectionName, document, id = null) => {
 };
 
 const mongoPull = async (database, collectionName, id) => {
-  let bsonID;
+  let objectId;
   try {
-    bsonID = new bson.ObjectID(id);
+    objectId = new bson.ObjectID(id);
   } catch (e) {
     throw new CoreError(CoreError.Kind.NotFound, `Invalid ID '${id}': ${e}`);
   }
   const document = await database
     .collection(collectionName)
-    .findOne({_id: bsonID})
+    .findOne({_id: objectId})
     .catch(e => {
       throw new CoreError(
         CoreError.Kind.DatabaseOperationFailure,
