@@ -2,6 +2,7 @@ import express from 'express';
 
 import authenticateAdmin from '../../../../../utils/authenticateAdmin.js';
 import getShortURL from '../../../../../core/shortURL/get.js';
+import inferErrorStatus from '../../../../../utils/infer-error-status.js';
 import removeShortURL from '../../../../../core/shortURL/remove.js';
 import respond from '../../../../../utils/respond.js';
 
@@ -13,7 +14,7 @@ router.get('/', async (request, response, next) => {
       respond(response, {json: shortURL});
     })
     .catch(error => {
-      respond(response, {status: 404, error});
+      respond(response, {status: inferErrorStatus(error.kind), error});
     });
 });
 
@@ -26,7 +27,7 @@ router.delete('/', async (request, response, next) => {
       respond(response);
     })
     .catch(error => {
-      respond(response, {status: 404, error});
+      respond(response, {status: inferErrorStatus(error.kind), error});
     });
 });
 

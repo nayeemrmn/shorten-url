@@ -3,17 +3,19 @@ import mongodb from 'mongodb';
 import process from 'process';
 
 import COLLECTIONS from './collections.js';
+import CoreError from '../core-error.js';
 
 export default async () => {
   if (process.env.MONGODB_URI == null) {
-    throw new Error(
-      `Couldn't connect to the database: MONGODB_URI is not set.`
+    throw new CoreError(
+      CoreError.Kind.DatabaseNotSet,
+      'MONGODB_URI is not set.'
     );
   }
   const client = await mongodb.MongoClient.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true
   }).catch(e => {
-    throw new Error(`Couldn't connect to the database: ${e}`);
+    throw new CoreError(CoreError.Kind.DatabaseConnectionFailure, `${e}`);
   });
   const database = client.db();
   return {
@@ -31,7 +33,8 @@ const mongoPush = async (database, collectionName, document, id = null) => {
   const collection = database.collection(collectionName);
   if (id == null) {
     const {insertedId} = await collection.insertOne(document).catch(e => {
-      throw new Error(
+      throw new CoreError(
+        CoreError.Kind.DatabaseOperationFailure,
         'Failed to insert the document into ' +
           `collection '${collectionName}': ${e}`
       );
@@ -43,7 +46,8 @@ const mongoPush = async (database, collectionName, document, id = null) => {
     await collection.replaceOne({_id: objectID}, {...document, _id: objectID});
     return id;
   } catch (e) {
-    throw new Error(
+    throw new CoreError(
+      CoreError.Kind.DatabaseOperationFailure,
       'Failed to replace the document in collection ' +
         `'${collectionName}' with ID '${id}': ${e}`
     );
@@ -51,17 +55,25 @@ const mongoPush = async (database, collectionName, document, id = null) => {
 };
 
 const mongoPull = async (database, collectionName, id) => {
+  let bsonID;
+  try {
+    bsonID = new bson.ObjectID(id);
+  } catch (e) {
+    throw new CoreError(CoreError.Kind.NotFound, `Invalid ID '${id}': ${e}`);
+  }
   const document = await database
     .collection(collectionName)
-    .findOne({_id: new bson.ObjectID(id)})
+    .findOne({_id: bsonID})
     .catch(e => {
-      throw new Error(
+      throw new CoreError(
+        CoreError.Kind.DatabaseOperationFailure,
         `Failed to open the collection '${collectionName}' ` +
           `to pull the document with ID '${id}': ${e}`
       );
     });
   if (document == null) {
-    throw new Error(
+    throw new CoreError(
+      CoreError.Kind.NotFound,
       `Couldn't find a document in collection ` +
         `'${collectionName}' with ID '${id}'.`
     );
@@ -76,13 +88,15 @@ const mongoDelete = async (database, collectionName, id) => {
     .collection(collectionName)
     .deleteOne({_id: new bson.ObjectID(id)})
     .catch(e => {
-      throw new Error(
+      throw new CoreError(
+        CoreError.Kind.DatabaseOperationFailure,
         `Failed to open the collection ` +
           `'${collectionName}' to delete the document with ID '${id}': ${e}`
       );
     });
   if (deletedCount == 0) {
-    throw new Error(
+    throw new CoreError(
+      CoreError.Kind.NotFound,
       `Couldn't find a document in collection ` +
         `'${collectionName}' with ID '${id}'.`
     );
@@ -109,7 +123,8 @@ const mongoFind = async (
     cursor = cursor.limit(limit);
   }
   const results = await cursor.toArray().catch(e => {
-    throw new Error(
+    throw new CoreError(
+      CoreError.Kind.DatabaseOperationFailure,
       `Failed to open the collection ` +
         `'${collectionName}' to find documents: ${e}`
     );
@@ -126,7 +141,8 @@ const mongoDeleteAll = async (database, collectionName) => {
     .collection(collectionName)
     .deleteMany({})
     .catch(e => {
-      throw new Error(
+      throw new CoreError(
+        CoreError.Kind.DatabaseOperationFailure,
         `Failed to delete all documents in the ` +
           `collection '${collectionName}': ${e}`
       );
@@ -139,7 +155,10 @@ const mongoPushGlobals = async (database, document) => {
       .collection(COLLECTIONS.GLOBAL)
       .replaceOne({}, {...document}, {upsert: true});
   } catch (e) {
-    throw new Error(`Failed to replace the global document': ${e}`);
+    throw new CoreError(
+      CoreError.Kind.DatabaseOperationFailure,
+      `Failed to replace the global document': ${e}`
+    );
   }
 };
 
@@ -148,7 +167,10 @@ const mongoPullGlobals = async database => {
     .collection(COLLECTIONS.GLOBAL)
     .findOne()
     .catch(e => {
-      throw new Error(`Failed to open the global document: ${e}`);
+      throw new CoreError(
+        CoreError.Kind.DatabaseOperationFailure,
+        `Failed to open the global document: ${e}`
+      );
     });
   if (document == null) {
     return {};

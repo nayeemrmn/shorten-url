@@ -3,6 +3,7 @@ import express from 'express';
 import authenticateAdmin from '../../../../utils/authenticateAdmin.js';
 import createShortURL from '../../../../core/shortURL/create.js';
 import findShortURL from '../../../../core/shortURL/find.js';
+import inferErrorStatus from '../../../../utils/infer-error-status.js';
 import parseRequestBody from '../../../../utils/parse-request-body.js';
 import removeAllShortURLs from '../../../../core/shortURL/remove-all.js';
 import respond from '../../../../utils/respond.js';
@@ -40,8 +41,8 @@ router.get('/', async (request, response, next) => {
 
 router.post('/', async (request, response, next) => {
   await parseRequestBody(request)
-    .then(({url}) => {
-      createShortURL(url)
+    .then(async ({url}) => {
+      await createShortURL(url)
         .then(([id, shortURL]) => {
           respond(response, {
             json: {
@@ -54,7 +55,7 @@ router.post('/', async (request, response, next) => {
           });
         })
         .catch(error => {
-          respond(response, {status: 500, error});
+          respond(response, {status: inferErrorStatus(error.kind), error});
         });
     })
     .catch(error => {
@@ -71,7 +72,7 @@ router.delete('/', async (request, response, next) => {
       respond(response);
     })
     .catch(error => {
-      respond(response, {status: 500, error});
+      respond(response, {status: inferErrorStatus(error.kind), error});
     });
 });
 

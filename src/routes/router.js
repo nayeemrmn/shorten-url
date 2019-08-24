@@ -2,6 +2,7 @@ import express from 'express';
 
 import api from './api/router.js';
 import findShortURLs from '../core/shortURL/find.js';
+import inferErrorStatus from '../utils/infer-error-status.js';
 import respond from '../utils/respond.js';
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.use('/:path', async (request, response, next) => {
       respond(response, {status: 301, redirect: shortURL.destination});
     })
     .catch(error => {
-      respond(response, {status: 500, error});
+      respond(response, {status: inferErrorStatus(error.kind), error});
     });
 });
 
