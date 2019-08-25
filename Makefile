@@ -1,3 +1,14 @@
+# Tools
+NODE = node
+NODE_FLAGS = --experimental-modules
+NPM = npm
+
+# Files and directories
+NODE_MODULES = node_modules
+PACKAGE_JSON = package.json
+SERVER_JS = src/server.js
+
+# Server environment
 ENVIRONMENT = \
 	ADMIN_USERNAME=admin \
 	ADMIN_PASSWORD=password \
@@ -6,19 +17,19 @@ ENVIRONMENT = \
 
 .PHONY: all clean server
 
-all: node_modules/
+all: $(NODE_MODULES)/
 
 # Install node dependencies.
-node_modules/: package.json
+$(NODE_MODULES)/: $(PACKAGE_JSON)
 	@echo "Install node dependencies."
-	@npm install
-	@mkdir -p node_modules
-	@touch node_modules
+	@$(NPM) install
+	@mkdir -p $(NODE_MODULES)
+	@touch $(NODE_MODULES)
 
 # Remove build files.
 clean:
-	@echo "Remove 'node_modules'."
-	@rm -rf node_modules
+	@echo "Remove '$(NODE_MODULES)'."
+	@rm -rf $(NODE_MODULES)
 
 # Start a server for local testing at port $(PORT).
 # Environment requirements:
@@ -26,6 +37,6 @@ clean:
 #   - A MongoDB database being served at $(MONGODB_URI).
 # Protected endpoints may be accessed using credentials containing
 # $(ADMIN_USERNAME):$(ADMIN_PASSWORD).
-server: node_modules/
+server: $(NODE_MODULES)/
 	@echo "Start the server."
-	@$(ENVIRONMENT) node --experimental-modules src/server.js
+	@$(ENVIRONMENT) $(NODE) $(NODE_FLAGS) $(SERVER_JS)
